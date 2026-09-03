@@ -127,9 +127,17 @@ footer{margin-top:18px;display:flex;justify-content:space-between;align-items:ce
    --------------------------------------------------------------- */
 var CONFIG = {
   endpoint: "https://script.google.com/macros/s/AKfycbzKymmI9yjptgveujVnbB5NM6qYwQiA4ApY5lk2jdoyN6Zpht1zW3DRAIgEEa2hvUr2DQ/exec",
-  key: "mas-fieldkit-2026",  /* shared key */
-  staff: "Henry"
+  key: "",                   /* comes from your link: #k=... */
+  staff: ""                  /* the endpoint says who you are */
 };
+
+function bootKey(){
+  var m=/[#&]k=([A-Za-z0-9_-]+)/.exec(location.hash||"");
+  if(m){ CONFIG.key=m[1]; put("fieldkit.key.v1",m[1]);
+    try{ history.replaceState(null,"",location.pathname); }catch(e){} }
+  else { CONFIG.key=load("fieldkit.key.v1","")||""; }
+  return !!CONFIG.key;
+}
 
 var STEPS=["Order in","Set up","Inspect","Send"];
 var STATUS={received:0,booked:1,inspected:2,submitted:3};
@@ -157,6 +165,7 @@ function merge(remote){
   var local=load(STORE,{});
   JOBS=remote.map(function(j){
     var mine=local[j.job]||{};
+    if(j.kind==="desk"){ return j; }
     j.status=mine.status||j.status||"received";
     j.bookedFor=mine.bookedFor||j.bookedFor||null;
     j.shotsDone=mine.shotsDone||[];
@@ -218,8 +227,11 @@ function render(){
   if(view.name==="list"){
     if(!JOBS.length){ app.innerHTML='<div class="panel"><h3>No jobs yet</h3>'
       +'<p class="note">When Jeff assigns you an inspection it lands here.</p></div>'; return; }
-    var open=JOBS.filter(function(o){return o.status!=="submitted";}).length;
-    app.innerHTML='<div class="eyebrow">Your jobs — '+open+' open</div>'+JOBS.map(card).join("");
+    var insp=JOBS.filter(function(o){return o.kind!=="desk";});
+    var desk=JOBS.filter(function(o){return o.kind==="desk";});
+    var open=insp.filter(function(o){return o.status!=="submitted";}).length;
+    app.innerHTML=(insp.length?'<div class="eyebrow">Inspections — '+open+' open</div>'+insp.map(card).join(""):"")
+      +(desk.length?'<div class="eyebrow" style="margin-top:8px">Also on your desk — no site visit</div>'+desk.map(deskRow).join(""):"");
     Array.prototype.forEach.call(app.querySelectorAll(".job"),function(el){
       el.onclick=function(){ view={name:"job",job:el.dataset.job}; render(); scrollTo(0,0); };});
     return;
@@ -341,9 +353,24 @@ function addPhotos(o,files){
 }
 
 /* ---------- start ---------- */
+function deskRow(o){
+  return '<div class="job" style="cursor:default"><div class="top">'
+   +'<span class="num">'+esc(o.job)+'</span>'
+   +'<span class="pill s-received">At the desk</span></div>'
+   +'<h2 style="font-size:18px">'+esc(o.address)+'</h2>'
+   +'<div class="meta">'+esc(o.city)+'</div>'
+   +'<div class="meta" style="margin-top:8px;color:var(--ink)">'+esc(o.note||"")+'</div></div>';
+}
+
 function start(){
   document.getElementById("stamp").textContent=new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
-  document.getElementById("who").textContent=CONFIG.staff+" · working for Jeff Michael";
+  document.getElementById("who").textContent=(CONFIG.staff||"")+(CONFIG.staff?" · ":"")+"working for Jeff Michael";
+  if(!bootKey()){
+    setSync("off","no link yet");
+    document.getElementById("app").innerHTML='<div class="panel"><h3>You need your own link</h3>'
+      +'<p class="note">This app opens with a personal link from Jeff. Ask him to send it to you, open it once, and it will remember you from then on.</p></div>';
+    return;
+  }
   var cached=load("fieldkit.jobs.v1",null);
   if(cached){ merge(cached); render(); }
   if(!CONFIG.endpoint){
@@ -353,9 +380,12 @@ function start(){
     return;
   }
   setSync("","checking for jobs");
-  fetch(CONFIG.endpoint+"?key="+encodeURIComponent(CONFIG.key)+"&staff="+encodeURIComponent(CONFIG.staff))
+  fetch(CONFIG.endpoint+"?key="+encodeURIComponent(CONFIG.key))
     .then(function(r){ return r.json(); })
-    .then(function(d){ var jobs=d.jobs||[]; put("fieldkit.jobs.v1",jobs); merge(jobs); render(); flush(); })
+    .then(function(d){ if(d.error){ setSync("off","that link is not recognised"); return; }
+      if(d.staff){ CONFIG.staff=d.staff;
+        document.getElementById("who").textContent=d.staff+" · working for Jeff Michael"; }
+      var jobs=d.jobs||[]; put("fieldkit.jobs.v1",jobs); merge(jobs); render(); flush(); })
     .catch(function(){ setSync("off","offline — showing what's on this phone"); if(!cached) render(); });
 }
 if("serviceWorker" in navigator){ window.addEventListener("load",function(){
