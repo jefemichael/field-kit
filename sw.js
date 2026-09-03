@@ -1,5 +1,5 @@
 /* Field Kit service worker — cache the shell so the app opens with no signal. */
-var CACHE = "fieldkit-v1";
+var CACHE = "fieldkit-v2";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", function(e){
