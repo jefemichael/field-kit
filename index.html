@@ -368,7 +368,22 @@ function start(){
   if(!bootKey()){
     setSync("off","no link yet");
     document.getElementById("app").innerHTML='<div class="panel"><h3>You need your own link</h3>'
-      +'<p class="note">This app opens with a personal link from Jeff. Ask him to send it to you, open it once, and it will remember you from then on.</p></div>';
+      +'<p class="note">Paste the personal link Jeff sent you, then tap Continue. You only do this once \u2014 this phone remembers you from then on.</p>'
+      +'<input id="keyin" type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" '
+      +'placeholder="Paste your link here" style="width:100%;box-sizing:border-box;min-height:52px;padding:0 12px;'
+      +'font-size:16px;font-family:var(--body);border:1px solid var(--rule);border-radius:9px;margin-top:10px">'
+      +'<p id="keyerr" class="note" style="display:none;color:var(--red)">That does not look like your link. It should end in #k= followed by a code. Ask Jeff to send it again.</p>'
+      +'<button id="keygo" class="btn primary">Continue</button></div>';
+    document.getElementById("keygo").onclick=function(){
+      var v=document.getElementById("keyin").value||"";
+      var m=/[#&?]k=([A-Za-z0-9_-]+)/.exec(v)||/^\s*([A-Za-z0-9_-]{8,})\s*$/.exec(v);
+      if(!m){ document.getElementById("keyerr").style.display="block"; return; }
+      put("fieldkit.key.v1",m[1]);
+      location.reload();
+    };
+    document.getElementById("keyin").addEventListener("keydown",function(e){
+      if(e.key==="Enter"){ e.preventDefault(); document.getElementById("keygo").click(); }
+    });
     return;
   }
   var cached=load("fieldkit.jobs.v1",null);
