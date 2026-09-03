@@ -1,0 +1,1 @@
+Field Kit — the staff appraiser's phone app for Miami Appraisal Solutions. Four steps: order in, set up the inspection, do the inspection, send the report. No property data lives in this repository; jobs and submissions travel through a private endpoint.
