@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A423D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Field Kit">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Field Kit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --ground:#F1F4F2; --card:#FFFFFF; --ink:#13201E; --ink-soft:#546663; --rule:#D6DEDB;
+  --brand:#0E5B54; --brand-deep:#0A423D; --brand-ink:#EAF3F1;
+  --amber:#8A5510; --amber-bg:#FBEEDA; --blue:#1C5A86; --blue-bg:#E1EDF5;
+  --green:#1B5A3C; --green-bg:#DBEDE4; --grey:#576663; --grey-bg:#E7ECEA;
+  --red:#8C3520; --red-bg:#F8E3DC;
+  --shadow:0 1px 2px rgba(16,40,36,.10),0 6px 18px rgba(16,40,36,.06);
+  --display:"Archivo",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E1614; --card:#17211F; --ink:#E8EFED; --ink-soft:#9BACA8; --rule:#2A3735;
+  --brand:#3E9C92; --brand-deep:#0C201E; --brand-ink:#E8F5F2;
+  --amber:#E0A75B; --amber-bg:#3A2A12; --blue:#7FB6DC; --blue-bg:#152836;
+  --green:#79C79B; --green-bg:#122C20; --grey:#9BACA8; --grey-bg:#212C2A;
+  --red:#E39B84; --red-bg:#3A1B12;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.35);}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--ground);color:var(--ink);font:16px/1.5 var(--body);
+  padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+.phone{max-width:460px;margin:0 auto;padding:0 14px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+header.mast{background:var(--brand-deep);color:var(--brand-ink);
+  padding:calc(14px + env(safe-area-inset-top)) 0 15px}
+.mast .shop{font:600 11.5px/1 var(--mono);letter-spacing:.16em;color:#9FC9C2}
+.mast h1{font:700 25px/1.1 var(--display);letter-spacing:-.01em;margin-top:5px}
+.mast .who{font-size:13.5px;color:#A9CEC8;margin-top:3px}
+main{padding-top:16px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{font:600 11.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.job{background:var(--card);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow);
+  padding:15px 16px 16px;width:100%;text-align:left;display:block;cursor:pointer}
+.job .top{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.job .num{font:600 12.5px/1 var(--mono);color:var(--brand)}
+.job h2{font:600 20px/1.25 var(--display);margin:7px 0 2px;text-wrap:balance}
+.job .meta{font-size:13.5px;color:var(--ink-soft)}
+.job .next{margin-top:12px;font-size:15px;font-weight:600;color:var(--brand)}
+.pill{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:6px 9px;border-radius:999px;white-space:nowrap}
+.s-received{background:var(--grey-bg);color:var(--grey)}
+.s-booked{background:var(--blue-bg);color:var(--blue)}
+.s-inspected{background:var(--amber-bg);color:var(--amber)}
+.s-submitted{background:var(--green-bg);color:var(--green)}
+.s-queued{background:var(--red-bg);color:var(--red)}
+.rail{display:flex;gap:6px;margin:2px 0 4px}
+.rail div{flex:1;height:5px;border-radius:3px;background:var(--rule)}
+.rail div.on{background:var(--brand)}
+.railcap{display:flex;justify-content:space-between;font:600 10.5px/1 var(--mono);letter-spacing:.06em;
+  color:var(--ink-soft);text-transform:uppercase}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow);padding:16px}
+.panel h3{font:600 17px/1.3 var(--display);margin-bottom:4px}
+.panel p.note{font-size:14.5px;color:var(--ink-soft)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14.5px;margin-top:12px}
+.kv dt{color:var(--ink-soft)} .kv dd{font-variant-numeric:tabular-nums}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;width:100%;
+  border-radius:9px;border:2px solid var(--brand);font-weight:600;font-size:16.5px;text-decoration:none;
+  cursor:pointer;background:var(--card);color:var(--brand);margin-top:12px}
+.btn.primary{background:var(--brand);color:#F4FBF9}
+.btn[disabled]{opacity:.45}
+.back{background:none;border:0;color:var(--brand);font-weight:600;font-size:15px;padding:6px 0;cursor:pointer}
+label.f{display:block;margin-top:13px;font-size:14px;font-weight:600}
+label.f span{display:block;color:var(--ink-soft);font-weight:400;font-size:13px;margin-bottom:4px}
+input[type=text],input[type=date],input[type=time],textarea{width:100%;padding:12px;border:1px solid var(--rule);
+  border-radius:8px;background:var(--ground);min-height:48px}
+textarea{min-height:90px;resize:vertical}
+ul.shots{list-style:none;margin-top:10px}
+ul.shots li{border-top:1px solid var(--rule)} ul.shots li:first-child{border-top:0}
+ul.shots label{display:flex;gap:11px;align-items:flex-start;padding:11px 2px;font-size:15px;cursor:pointer}
+ul.shots input{width:22px;height:22px;margin-top:1px;accent-color:var(--brand);flex:none}
+.count{font:600 12px/1 var(--mono);color:var(--ink-soft)}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.photos figure{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:var(--grey-bg)}
+.photos img{width:100%;height:100%;object-fit:cover;display:block}
+.photos button{position:absolute;top:4px;right:4px;width:30px;height:30px;border-radius:50%;border:0;
+  background:rgba(10,30,28,.72);color:#fff;font-size:17px;line-height:30px;cursor:pointer}
+.addphoto{margin-top:12px;border:2px dashed var(--brand);border-radius:9px;padding:16px;text-align:center;
+  color:var(--brand);font-weight:600;cursor:pointer;display:block}
+.addphoto input{display:none}
+.callbox{margin-top:12px;border:2px solid var(--brand);border-radius:9px;overflow:hidden}
+.callbox a.dial{display:flex;align-items:center;justify-content:center;min-height:54px;background:var(--brand);
+  color:#F4FBF9;font-weight:600;font-size:16.5px;text-decoration:none}
+.callbox .num{padding:11px 14px;background:var(--card);text-align:center;
+  font:600 20px/1 var(--mono);font-variant-numeric:tabular-nums;user-select:all;-webkit-user-select:all}
+.flag{margin-top:12px;background:var(--amber-bg);color:var(--amber);border-radius:8px;padding:11px 13px;font-size:14px}
+.flag.bad{background:var(--red-bg);color:var(--red)}
+footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;
+  font:500 12px/1 var(--mono);color:var(--ink-soft);padding:12px 0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--grey);margin-right:6px}
+.dot.live{background:var(--green)} .dot.off{background:var(--amber)}
+.done{text-align:center;padding:26px 16px}
+.done .big{font:700 22px/1.25 var(--display);color:var(--green);margin-bottom:6px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;background:var(--brand-deep);
+  color:var(--brand-ink);padding:12px 18px;border-radius:8px;font-size:15px;z-index:9;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<header class="mast"><div class="phone">
+  <div class="shop">MIAMI APPRAISAL SOLUTIONS</div>
+  <h1>Field Kit</h1>
+  <div class="who" id="who">Loading…</div>
+</div></header>
+<div class="phone">
+  <main id="app"><div class="panel"><p class="note">Loading your jobs…</p></div></main>
+  <footer><span id="sync"><span class="dot"></span>starting</span><span id="stamp"></span></footer>
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   Field Kit — Miami Appraisal Solutions
+   Jobs come from the endpoint; nothing about a property is stored
+   in this repository. State is local-first: every tap is saved on
+   the phone, then pushed. No signal = it queues and sends later.
+   --------------------------------------------------------------- */
+var CONFIG = {
+  endpoint: "",              /* Apps Script /exec URL — filled in at wiring */
+  key: "",                   /* shared key, per person */
+  staff: "Henry"
+};
+
+var STEPS=["Order in","Set up","Inspect","Send"];
+var STATUS={received:0,booked:1,inspected:2,submitted:3};
+var STORE="fieldkit.state.v1", QUEUE="fieldkit.queue.v1";
+var JOBS=[], view={name:"list",job:null};
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function load(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+function put(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function fmtDate(d){ if(!d) return ""; var p=String(d).split("-"); if(p.length<3) return d;
+  var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var dt=new Date(+p[0],+p[1]-1,+p[2]), W=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  return W[dt.getDay()]+" "+(+p[2])+" "+M[+p[1]-1]; }
+function fmtTime(t){ if(!t) return ""; var p=t.split(":"), h=+p[0], ap=h>=12?"pm":"am";
+  h=h%12; if(h===0)h=12; return h+":"+p[1]+" "+ap; }
+function label(s){return {received:"Order in",booked:"Booked",inspected:"Inspected",
+  submitted:"Sent to Jeff",queued:"Waiting for signal"}[s]||s;}
+function toast(m){ var t=document.createElement("div"); t.className="toast"; t.textContent=m;
+  document.body.appendChild(t); setTimeout(function(){t.remove();},2400); }
+function setSync(cls,txt){ document.getElementById("sync").innerHTML='<span class="dot '+cls+'"></span>'+txt; }
+
+/* ---------- data ---------- */
+function merge(remote){
+  var local=load(STORE,{});
+  JOBS=remote.map(function(j){
+    var mine=local[j.job]||{};
+    j.status=mine.status||j.status||"received";
+    j.bookedFor=mine.bookedFor||j.bookedFor||null;
+    j.shotsDone=mine.shotsDone||[];
+    j.photos=mine.photos||[];
+    j.submission=mine.submission||null;
+    return j;
+  });
+}
+function persist(o){
+  var local=load(STORE,{});
+  local[o.job]={status:o.status,bookedFor:o.bookedFor,shotsDone:o.shotsDone,
+                photos:o.photos,submission:o.submission};
+  put(STORE,local);
+}
+function post(payload){
+  if(!CONFIG.endpoint) return Promise.reject(new Error("no endpoint"));
+  return fetch(CONFIG.endpoint,{method:"POST",body:JSON.stringify(payload)})
+    .then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.text(); });
+}
+function send(payload){
+  return post(payload).then(function(){ flush(); }, function(){
+    var q=load(QUEUE,[]); q.push(payload); put(QUEUE,q);
+    setSync("off","queued — will send when you have signal");
+    return Promise.resolve();
+  });
+}
+function flush(){
+  var q=load(QUEUE,[]); if(!q.length){ setSync("live","live"); return; }
+  var next=q[0];
+  post(next).then(function(){ q.shift(); put(QUEUE,q); flush(); },
+                  function(){ setSync("off",q.length+" waiting to send"); });
+}
+window.addEventListener("online",flush);
+
+/* ---------- render ---------- */
+function get(id){ for(var i=0;i<JOBS.length;i++) if(JOBS[i].job===id) return JOBS[i]; return null; }
+function nextLabel(o){ return {received:"Set up the inspection",booked:"Start the inspection",
+  inspected:"Send the report to Jeff",submitted:"Sent — nothing due"}[o.status]; }
+function rail(status){ var i=STATUS[status]||0,b="",c="";
+  for(var k=0;k<4;k++){ b+='<div class="'+(k<=i?"on":"")+'"></div>'; c+='<span>'+STEPS[k]+'</span>'; }
+  return '<div class="rail">'+b+'</div><div class="railcap">'+c+'</div>'; }
+function card(o){
+  return '<button class="job" data-job="'+esc(o.job)+'"><div class="top">'
+   +'<span class="num">'+esc(o.job)+'</span>'
+   +'<span class="pill s-'+o.status+'">'+esc(label(o.status))+'</span></div>'
+   +'<h2>'+esc(o.address)+'</h2>'
+   +'<div class="meta">'+esc(o.city)+' · '+esc(o.propertyType)+' · '+esc(o.scope)+'</div>'
+   +(o.status==="booked"&&o.bookedFor?'<div class="meta" style="margin-top:6px">Booked '
+     +esc(fmtDate(o.bookedFor.date))+' at '+esc(fmtTime(o.bookedFor.time))+'</div>':'')
+   +'<div class="next">'+esc(nextLabel(o))+' ›</div></button>';
+}
+function callBox(c){
+  var digits=c.phone.replace(/[^0-9+]/g,"");
+  return '<div class="callbox"><a class="dial" href="tel:'+esc(digits)+'">Call '
+    +esc(c.name.split(" (")[0])+'</a><div class="num">'+esc(c.phone)+'</div></div>';
+}
+function render(){
+  var app=document.getElementById("app");
+  if(view.name==="list"){
+    if(!JOBS.length){ app.innerHTML='<div class="panel"><h3>No jobs yet</h3>'
+      +'<p class="note">When Jeff assigns you an inspection it lands here.</p></div>'; return; }
+    var open=JOBS.filter(function(o){return o.status!=="submitted";}).length;
+    app.innerHTML='<div class="eyebrow">Your jobs — '+open+' open</div>'+JOBS.map(card).join("");
+    Array.prototype.forEach.call(app.querySelectorAll(".job"),function(el){
+      el.onclick=function(){ view={name:"job",job:el.dataset.job}; render(); scrollTo(0,0); };});
+    return;
+  }
+  var o=get(view.job); if(!o){ view={name:"list"}; return render(); }
+  var h='<button class="back" id="back">‹ All jobs</button>'
+   +'<div class="panel"><span class="num" style="font:600 12.5px/1 var(--mono);color:var(--brand)">'+esc(o.job)+'</span>'
+   +'<h3 style="font-size:21px;margin:6px 0 3px">'+esc(o.address)+'</h3>'
+   +'<p class="note">'+esc(o.city)+' · '+esc(o.county)+' County · '+esc(o.propertyType)+'</p>'
+   +'<div style="margin-top:14px">'+rail(o.status)+'</div></div>';
+
+  if(o.status==="received"){
+    h+='<div class="panel"><h3>Set up the inspection</h3>'
+      +'<p class="note">'+esc(o.scope)+'. Call and agree a time, then put it in below.</p>'
+      +'<dl class="kv"><dt>Contact</dt><dd>'+esc(o.contact.name)+'</dd>'
+      +'<dt>Wants to attend</dt><dd>'+(o.contact.attends?"Yes":"No")+'</dd></dl>'
+      +callBox(o.contact)
+      +'<label class="f">Date<span>The day you agreed</span><input type="date" id="bd"></label>'
+      +'<label class="f">Time<span>Arrival time</span><input type="time" id="bt"></label>'
+      +'<button class="btn primary" id="book">I booked it</button></div>';
+  } else if(o.status==="booked"){
+    h+='<div class="panel"><h3>Booked</h3><dl class="kv"><dt>When</dt><dd>'
+      +esc(fmtDate(o.bookedFor.date))+' at '+esc(fmtTime(o.bookedFor.time))+'</dd>'
+      +'<dt>Meeting</dt><dd>'+esc(o.contact.name)+'</dd></dl>'
+      +'<a class="btn" href="https://maps.apple.com/?daddr='+encodeURIComponent(o.address+", "+o.city)
+      +'">Directions</a>'+callBox(o.contact)+'</div>'
+      +'<div class="panel"><h3>On site</h3><p class="note">Tick them off as you go. '
+      +'<span class="count">'+(o.shotsDone.length)+' of '+o.shotList.length+'</span></p><ul class="shots">'
+      +o.shotList.map(function(s,i){ return '<li><label><input type="checkbox" data-shot="'+i+'"'
+        +(o.shotsDone.indexOf(String(i))>=0?" checked":"")+'><span>'+esc(s)+'</span></label></li>';}).join("")
+      +'</ul>'+photoBlock(o)
+      +'<button class="btn primary" id="didit"'+(o.shotsDone.length?"":" disabled")+'>Done — write up the report</button></div>';
+  } else if(o.status==="inspected"||o.status==="queued"){
+    h+='<div class="panel"><h3>Your inspection report</h3>'
+      +'<p class="note">Fill what you measured on site. Jeff gets this the moment you send it.</p>'
+      +o.fields.map(function(f,i){ var v=(o.submission&&o.submission.values&&o.submission.values[f.key])||"";
+        return '<label class="f">'+esc(f.label)+(f.hint?'<span>'+esc(f.hint)+'</span>':'')
+          +'<input type="text" id="f'+i+'" value="'+esc(v)+'"></label>';}).join("")
+      +'<label class="f">Anything else<span>Condition, access, what surprised you</span>'
+      +'<textarea id="notes">'+esc((o.submission&&o.submission.notes)||"")+'</textarea></label>'
+      +photoBlock(o)
+      +'<button class="btn primary" id="send">Send to Jeff</button></div>';
+  } else {
+    h+='<div class="panel done"><div class="big">Sent to Jeff</div><p class="note">'
+      +esc(o.submission&&o.submission.sentAt?new Date(o.submission.sentAt).toLocaleString():"")+'</p>'
+      +'<p class="note" style="margin-top:10px">Nothing else is due from you on this one.</p></div>';
+    if(o.submission&&o.submission.values){
+      h+='<div class="panel"><h3>What you sent</h3><dl class="kv">'
+        +o.fields.map(function(f){ var v=o.submission.values[f.key];
+            return v?'<dt>'+esc(f.label)+'</dt><dd>'+esc(v)+'</dd>':'';}).join("")
+        +(o.submission.notes?'<dt>Notes</dt><dd>'+esc(o.submission.notes)+'</dd>':'')
+        +'<dt>Photographs</dt><dd>'+(o.photos.length||0)+'</dd></dl></div>';
+    }
+  }
+  app.innerHTML=h;
+  wire(o);
+}
+function photoBlock(o){
+  return '<div class="photos" id="ph">'+o.photos.map(function(p,i){
+      return '<figure><img src="'+p.data+'" alt="Site photograph '+(i+1)+'">'
+        +'<button type="button" data-del="'+i+'" aria-label="Remove photograph">×</button></figure>';}).join("")
+    +'</div><label class="addphoto">Add photographs'
+    +'<input type="file" accept="image/*" capture="environment" multiple id="pick"></label>'
+    +'<p class="note" style="margin-top:6px;font-size:13px">'+(o.photos.length||0)+' on this job</p>';
+}
+function wire(o){
+  var b=document.getElementById("back"); if(b) b.onclick=function(){view={name:"list"};render();scrollTo(0,0);};
+  var bk=document.getElementById("book");
+  if(bk) bk.onclick=function(){
+    var d=document.getElementById("bd").value,t=document.getElementById("bt").value;
+    if(!d||!t){ toast("Put in the date and the time first."); return; }
+    o.bookedFor={date:d,time:t}; o.status="booked"; persist(o);
+    send({type:"booked",job:o.job,staff:CONFIG.staff,key:CONFIG.key,bookedFor:o.bookedFor,
+          at:new Date().toISOString()});
+    render(); scrollTo(0,0);
+  };
+  Array.prototype.forEach.call(document.querySelectorAll("input[data-shot]"),function(el){
+    el.onchange=function(){ var k=el.dataset.shot,i=o.shotsDone.indexOf(k);
+      if(el.checked&&i<0)o.shotsDone.push(k); if(!el.checked&&i>=0)o.shotsDone.splice(i,1);
+      persist(o); render(); };
+  });
+  var di=document.getElementById("didit");
+  if(di) di.onclick=function(){ o.status="inspected"; persist(o); render(); scrollTo(0,0); };
+  var pick=document.getElementById("pick");
+  if(pick) pick.onchange=function(){ addPhotos(o,pick.files); };
+  Array.prototype.forEach.call(document.querySelectorAll("button[data-del]"),function(el){
+    el.onclick=function(){ o.photos.splice(+el.dataset.del,1); persist(o); render(); };
+  });
+  var sd=document.getElementById("send");
+  if(sd) sd.onclick=function(){
+    var vals={}; o.fields.forEach(function(f,i){ vals[f.key]=document.getElementById("f"+i).value; });
+    o.submission={values:vals,notes:document.getElementById("notes").value,sentAt:new Date().toISOString()};
+    o.status="submitted"; persist(o);
+    send({type:"report",job:o.job,staff:CONFIG.staff,key:CONFIG.key,submission:o.submission,
+          shotsDone:o.shotsDone,photos:o.photos,at:o.submission.sentAt});
+    render(); scrollTo(0,0);
+  };
+}
+/* photos: downscale in the browser so a submission stays small */
+function addPhotos(o,files){
+  var list=Array.prototype.slice.call(files||[]); if(!list.length) return;
+  toast(list.length+" photo"+(list.length>1?"s":"")+" — resizing");
+  var done=0;
+  list.forEach(function(f){
+    var img=new Image(), url=URL.createObjectURL(f);
+    img.onload=function(){
+      var max=1400, r=Math.min(1,max/Math.max(img.width,img.height));
+      var c=document.createElement("canvas");
+      c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      o.photos.push({name:f.name||("photo-"+(o.photos.length+1)+".jpg"),
+                     data:c.toDataURL("image/jpeg",0.72)});
+      URL.revokeObjectURL(url);
+      if(++done===list.length){ persist(o); render(); }
+    };
+    img.onerror=function(){ if(++done===list.length){ persist(o); render(); } };
+    img.src=url;
+  });
+}
+
+/* ---------- start ---------- */
+function start(){
+  document.getElementById("stamp").textContent=new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+  document.getElementById("who").textContent=CONFIG.staff+" · working for Jeff Michael";
+  var cached=load("fieldkit.jobs.v1",null);
+  if(cached){ merge(cached); render(); }
+  if(!CONFIG.endpoint){
+    setSync("off","not wired up yet");
+    if(!cached) document.getElementById("app").innerHTML='<div class="panel"><h3>Almost there</h3>'
+      +'<p class="note">The app is installed and working. It just needs Jeff to point it at the job list.</p></div>';
+    return;
+  }
+  setSync("","checking for jobs");
+  fetch(CONFIG.endpoint+"?key="+encodeURIComponent(CONFIG.key)+"&staff="+encodeURIComponent(CONFIG.staff))
+    .then(function(r){ return r.json(); })
+    .then(function(d){ var jobs=d.jobs||[]; put("fieldkit.jobs.v1",jobs); merge(jobs); render(); flush(); })
+    .catch(function(){ setSync("off","offline — showing what's on this phone"); if(!cached) render(); });
+}
+if("serviceWorker" in navigator){ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+start();
+</script>
+</body>
+</html>
