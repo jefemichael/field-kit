@@ -3,7 +3,7 @@
    Network-first for the page, cache-first for everything else. The staff app
    shipped cache-first on its page and an installed iPhone then served the shell
    it was installed with forever - a pushed fix never arrived. Do not repeat it. */
-var CACHE = "desk-v1";
+var CACHE = "desk-v2";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest", "../icon-192.png", "../icon-512.png"];
 
 self.addEventListener("install", function(e){

@@ -130,6 +130,12 @@ input[type=text]{width:100%;min-height:52px;border:1px solid var(--rule);border-
   .rail{width:auto;flex:none;border-right:0;border-bottom:1px solid var(--rule);max-height:44vh}
   .btn{min-width:120px}
 }
+.fitem{border-top:1px solid rgba(0,0,0,.08);padding:10px 0}
+.fitem:first-of-type{border-top:0;padding-top:2px}
+.fhead{margin-bottom:6px;font-size:14px}
+.fitem .row{display:flex;gap:10px;padding:2px 0;font-size:13px}
+.fitem .row .k{opacity:.62;min-width:104px;text-transform:capitalize}
+.fitem .row .v{flex:1}
 </style>
 </head>
 <body>
@@ -229,6 +235,49 @@ function pill(j){
   return '<span class="pill p-henry">With '+esc(j.assignedTo||"the shop")+'</span>';
 }
 
+/* THE FIELD FEED. Everything the staff app has sent in - inspection set-ups,
+   completed inspections, photographs - newest first, straight off the log sheet.
+   The board says where a FILE stands; this says what a PERSON just did. Without
+   it the desk cannot see Henry work, which is the whole point of the pair. */
+var FIELD=[];
+function loadField(){
+  fetch(CONFIG.endpoint+"?view=activity&key="+encodeURIComponent(CONFIG.key))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d || !d.activity) return;
+      FIELD=d.activity; put("desk.field.v1",FIELD);
+      renderPane();
+    })
+    .catch(function(){ FIELD=load("desk.field.v1",[])||[]; });
+}
+function ago(w){
+  var t=new Date(w); if(isNaN(t)) return "";
+  var m=Math.floor((Date.now()-t)/60000);
+  if(m<1) return "just now";
+  if(m<60) return m+" min ago";
+  if(m<1440) return Math.floor(m/60)+" hr ago";
+  return Math.floor(m/1440)+" d ago";
+}
+function fieldPanel(job){
+  var rows=FIELD.filter(function(f){ return String(f.job)===String(job); });
+  if(!rows.length) return '';
+  var h='<div class="panel"><h3>From the field</h3>';
+  rows.slice(0,6).forEach(function(f){
+    var d={}; try{ d=JSON.parse(f.detail||"{}"); }catch(e){ d={}; }
+    var bits=Object.keys(d).filter(function(k){ return d[k]; })
+      .map(function(k){ return '<div class="row"><span class="k">'+esc(k)+'</span>'
+        +'<span class="v">'+esc(String(d[k]).slice(0,180))+'</span></div>'; }).join("");
+    h+='<div class="fitem"><div class="fhead"><b>'+esc(f.who||"")+'</b> · '
+      +esc(f.what||"update")+' <span class="note">'+esc(ago(f.when))+'</span></div>'
+      +bits
+      +(f.photos && f.photos.length
+        ? '<div class="note">'+f.photos.length+' photograph'+(f.photos.length>1?'s':'')
+          +' — <a href="'+esc(f.photos[0])+'" target="_blank" rel="noopener">open the first</a></div>'
+        : '')
+      +'</div>';
+  });
+  return h+'</div>';
+}
 function renderPane(){
   var pane=document.getElementById("pane");
   var j=BOARD.filter(function(x){return x.job===sel;})[0];
@@ -280,6 +329,8 @@ function renderPane(){
     h+='<div class="panel"><h3>Sign off</h3><p class="note">Not finished yet. It shows up under '
       +'<b>Waiting on you</b> when the work is done and the QC gate has passed it.</p></div>';
   }
+
+  h+=fieldPanel(j.job);
 
   if(j.pdf){
     h+='<div class="rpt" id="rpt">'
@@ -393,6 +444,7 @@ function start(){
       merge(d.board||[]);
       if(!sel){ var first=BOARD.filter(function(j){return lane(j)==="you";})[0]; sel=first?first.job:null; }
       renderRail(); renderPane(); flush();
+      loadField();
     })
     .catch(function(){
       document.getElementById("who").textContent = cached ? "offline — showing the last board"
