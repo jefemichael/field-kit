@@ -332,10 +332,16 @@ function renderPane(){
 
   h+=fieldPanel(j.job);
 
+  /* The review sheet rides beside the report: same acts row, secondary weight.
+     Absent on files that have no review sheet -- no dead button. */
+  var revBtn = j.review
+    ? '<a class="btn" href="'+esc(j.review)+'" target="_blank" rel="noopener">Open the review sheet</a>'
+    : '';
   if(j.pdf){
     h+='<div class="rpt" id="rpt">'
       +'<div class="acts" style="margin-bottom:12px">'
       +'<a class="btn primary" href="'+esc(j.pdf)+'" target="_blank" rel="noopener">Open the report</a>'
+      +revBtn
       +'</div>'
       +'<iframe class="frame" id="rptframe" src="'+esc(j.pdf.replace("dl=0","raw=1"))+'" '
       +'title="the report"></iframe>'
@@ -343,7 +349,9 @@ function renderPane(){
       +'app \u2014 Dropbox will not sit in a frame here. Use <b>Open the report</b> above; it opens in '
       +'Dropbox where you are already signed in.</p></div></div>';
   } else {
-    h+='<div class="panel"><h3>The report</h3><p class="note">No rendered PDF on this one yet.</p></div>';
+    h+='<div class="panel"><h3>The report</h3><p class="note">No rendered PDF on this one yet.</p>'
+      +(revBtn ? '<div class="acts" style="margin-top:12px">'+revBtn+'</div>' : '')
+      +'</div>';
   }
 
   pane.innerHTML=h;
