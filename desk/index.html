@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A423D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Desk">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<title>The Desk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --ground:#F1F4F2; --card:#FFFFFF; --ink:#13201E; --ink-soft:#546663; --rule:#D6DEDB;
+  --brand:#0E5B54; --brand-deep:#0A423D; --brand-ink:#EAF3F1;
+  --amber:#8A5510; --amber-bg:#FBEEDA; --blue:#1C5A86; --blue-bg:#E1EDF5;
+  --green:#1B5A3C; --green-bg:#DBEDE4; --grey:#576663; --grey-bg:#E7ECEA;
+  --red:#8C3520; --red-bg:#F8E3DC;
+  --shadow:0 1px 2px rgba(16,40,36,.10),0 6px 18px rgba(16,40,36,.06);
+  --display:"Archivo",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);
+  -webkit-text-size-adjust:100%;overflow:hidden}
+.mast{background:var(--brand-deep);color:var(--brand-ink);
+  padding:calc(env(safe-area-inset-top) + 12px) 20px 12px;display:flex;align-items:flex-end;gap:16px}
+.mast .shop{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.72}
+.mast h1{font-family:var(--display);font-size:22px;margin:2px 0 0;font-weight:700;letter-spacing:-.01em}
+.mast .who{margin-left:auto;font-size:12.5px;opacity:.8;text-align:right;line-height:1.5}
+
+.wrap{display:flex;height:calc(100% - 62px)}
+.rail{width:352px;flex:0 0 352px;border-right:1px solid var(--rule);background:var(--card);
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.pane{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px 26px 60px}
+
+.group{padding:16px 16px 4px}
+.group h2{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.group h2 .n{background:var(--grey-bg);color:var(--grey);border-radius:20px;padding:1px 7px;
+  font-size:10px;letter-spacing:.04em}
+.group.you h2{color:var(--amber)} .group.you h2 .n{background:var(--amber-bg);color:var(--amber)}
+
+.row{width:100%;text-align:left;background:transparent;border:0;border-radius:10px;
+  padding:11px 12px;margin-bottom:3px;cursor:pointer;font-family:inherit;display:block}
+.row:hover{background:var(--ground)}
+.row[aria-current="true"]{background:var(--brand);color:#F4FBF9}
+.row[aria-current="true"] .sub,.row[aria-current="true"] .num{color:#BFD9D4}
+.row .num{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.03em}
+.row .addr{font-weight:600;font-size:14.5px;margin:2px 0 1px;line-height:1.3}
+.row .sub{font-size:12px;color:var(--ink-soft);line-height:1.4}
+.row .flag{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);
+  margin-left:6px;vertical-align:middle}
+
+.empty{padding:40px 24px;color:var(--ink-soft);font-size:14px;line-height:1.6}
+
+.head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:2px}
+.head .num{font-family:var(--mono);font-size:13px;color:var(--ink-soft)}
+.head h2{font-family:var(--display);font-size:27px;margin:0;font-weight:700;letter-spacing:-.02em}
+.sub2{color:var(--ink-soft);font-size:14px;margin:4px 0 20px}
+
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;
+  letter-spacing:.02em}
+.p-you{background:var(--amber-bg);color:var(--amber)}
+.p-henry{background:var(--blue-bg);color:var(--blue)}
+.p-hold{background:var(--grey-bg);color:var(--grey)}
+.p-done{background:var(--green-bg);color:var(--green)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:13px 14px;
+  box-shadow:var(--shadow)}
+.stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-soft)}
+.stat .v{font-family:var(--display);font-size:21px;font-weight:700;margin-top:4px;letter-spacing:-.01em}
+.stat .v.sm{font-size:15px;font-weight:600;font-family:var(--body);line-height:1.35}
+.stat.warn{border-color:#E8C9A8;background:var(--amber-bg)}
+.stat.warn .k,.stat.warn .v{color:var(--amber)}
+
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;
+  box-shadow:var(--shadow);margin-bottom:18px}
+.panel h3{font-family:var(--display);font-size:15px;margin:0 0 10px;font-weight:600}
+.panel p{margin:0 0 10px;font-size:14.5px;line-height:1.62;color:var(--ink)}
+.panel p:last-child{margin-bottom:0}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:7px 16px;font-size:14px;line-height:1.5}
+.kv dt{color:var(--ink-soft)} .kv dd{margin:0}
+
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.btn{flex:1;min-width:150px;text-decoration:none;min-height:52px;display:flex;align-items:center;justify-content:center;
+  gap:8px;border-radius:10px;border:2px solid var(--brand);background:var(--card);color:var(--brand);
+  font-family:inherit;font-weight:600;font-size:16px;cursor:pointer}
+.btn.primary{background:var(--brand);color:#F4FBF9}
+.btn.warn{border-color:var(--amber);color:var(--amber)}
+.btn.quiet{border-color:var(--rule);color:var(--ink-soft)}
+.btn[disabled]{opacity:.45}
+textarea{width:100%;min-height:74px;border:1px solid var(--rule);border-radius:10px;padding:11px 12px;
+  font-family:inherit;font-size:16px;resize:vertical;margin-bottom:10px;color:var(--ink)}
+input[type=text]{width:100%;min-height:52px;border:1px solid var(--rule);border-radius:10px;
+  padding:0 12px;font-family:inherit;font-size:16px;color:var(--ink)}
+
+.rpt{margin-bottom:18px}
+.rpt .frame{width:100%;height:62vh;min-height:420px;border:1px solid var(--rule);border-radius:12px;
+  background:var(--card);box-shadow:var(--shadow);display:block}
+.rpt .fallback{display:none}
+.rpt.failed .frame{display:none}
+.rpt.failed .fallback{display:block}
+.rail-foot{padding:14px 20px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-soft);
+  display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--grey);display:inline-block}
+.dot.live{background:#2E7D5B} .dot.off{background:var(--amber)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:32px;background:var(--brand-deep);
+  color:#EAF3F1;padding:13px 20px;border-radius:10px;font-size:15px;box-shadow:var(--shadow);z-index:9}
+.note{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.stamp{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+
+/* iPad portrait is 820pt wide - keep both panes there, it is the whole point of
+   putting this on the iPad. Only a phone stacks. */
+@media (max-width:1000px){
+  .rail{width:286px;flex:0 0 286px}
+  .pane{padding:18px 20px 60px}
+  .head h2{font-size:23px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(126px,1fr));gap:10px}
+  .kv{grid-template-columns:120px 1fr}
+}
+@media (max-width:700px){
+  .wrap{flex-direction:column;height:auto;overflow:auto}
+  body{overflow:auto}
+  .rail{width:auto;flex:none;border-right:0;border-bottom:1px solid var(--rule);max-height:44vh}
+  .btn{min-width:120px}
+}
+</style>
+</head>
+<body>
+
+<div class="mast">
+  <div>
+    <div class="shop">Miami Appraisal Solutions</div>
+    <h1>The Desk</h1>
+  </div>
+  <div class="who" id="who"></div>
+</div>
+
+<div class="wrap">
+  <div class="rail" id="rail"></div>
+  <div class="pane" id="pane"></div>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   THE DESK — the master appraiser's surface.
+   Reads the board from the Apps Script endpoint, gated by a personal
+   key. Nothing sensitive is baked into this page: it ships empty and
+   is useless without a key, because it is served from a public host.
+   ------------------------------------------------------------------ */
+var CONFIG = {
+  endpoint: "https://script.google.com/macros/s/AKfycbzKymmI9yjptgveujVnbB5NM6qYwQiA4ApY5lk2jdoyN6Zpht1zW3DRAIgEEa2hvUr2DQ/exec",
+  key: "", who: ""
+};
+var STORE="desk.state.v1", QUEUE="desk.queue.v1", KEYK="desk.key.v1";
+var BOARD=[], sel=null;
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function load(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+function put(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function money(n){ return n==null?"—":"$"+Number(n).toLocaleString("en-US"); }
+function toast(m){ var t=document.createElement("div"); t.className="toast"; t.textContent=m;
+  document.body.appendChild(t); setTimeout(function(){t.remove();},2600); }
+
+function bootKey(){
+  var m=/[#&]k=([A-Za-z0-9_-]+)/.exec(location.hash||"");
+  if(m){ CONFIG.key=m[1]; put(KEYK,m[1]);
+    try{ history.replaceState(null,"",location.pathname); }catch(e){} }
+  else { CONFIG.key=load(KEYK,"")||""; }
+  return !!CONFIG.key;
+}
+
+/* ---------- grouping ---------- */
+/* A file is WAITING ON YOU when the work is finished and the only thing
+   left is the master's signature. Everything else is somebody's in-flight
+   work, or parked. */
+function lane(j){
+  if(j.decision)            return "done";
+  if(j.bucket==="hold")     return "hold";
+  if(j.waitingOnMaster)     return "you";
+  return "work";
+}
+var LANES=[
+  {id:"you",  title:"Waiting on you"},
+  {id:"work", title:"In flight"},
+  {id:"hold", title:"Parked"},
+  {id:"done", title:"Signed off"}
+];
+
+function renderRail(){
+  var h="";
+  LANES.forEach(function(L){
+    var rows=BOARD.filter(function(j){return lane(j)===L.id;});
+    if(!rows.length) return;
+    h+='<div class="group'+(L.id==="you"?" you":"")+'"><h2>'+esc(L.title)
+      +'<span class="n">'+rows.length+'</span></h2>';
+    rows.forEach(function(j){
+      h+='<button class="row" data-job="'+esc(j.job)+'" aria-current="'+(sel===j.job)+'">'
+        +'<span class="num">'+esc(j.job)+'</span>'
+        +(j.openCritical>0?'<span class="flag" title="open items"></span>':'')
+        +'<div class="addr">'+esc(j.address)+'</div>'
+        +'<div class="sub">'+esc(j.stageShort||j.stage||"")
+        +(j.assignedTo?' · '+esc(j.assignedTo):'')+'</div></button>';
+    });
+    h+='</div>';
+  });
+  var q=load(QUEUE,[]).length;
+  h+='<div class="rail-foot"><span class="dot '+(q?"off":"live")+'"></span>'
+    +(q?q+" waiting to send":"live")+'</div>';
+  var rail=document.getElementById("rail");
+  rail.innerHTML=h;
+  Array.prototype.forEach.call(rail.querySelectorAll(".row"),function(b){
+    b.onclick=function(){ sel=b.getAttribute("data-job"); renderRail(); renderPane(); };
+  });
+}
+
+function pill(j){
+  var l=lane(j);
+  if(l==="done") return '<span class="pill p-done">Signed off</span>';
+  if(l==="hold") return '<span class="pill p-hold">Parked — '+esc(j.holdReason||"on hold")+'</span>';
+  if(l==="you")  return '<span class="pill p-you">Your signature</span>';
+  return '<span class="pill p-henry">With '+esc(j.assignedTo||"the shop")+'</span>';
+}
+
+function renderPane(){
+  var pane=document.getElementById("pane");
+  var j=BOARD.filter(function(x){return x.job===sel;})[0];
+  if(!j){
+    pane.innerHTML='<div class="empty">Pick a file on the left.<br><br>'
+      +'The ones under <b>Waiting on you</b> are finished and want your signature.</div>';
+    return;
+  }
+  var h='<div class="head"><span class="num">'+esc(j.job)+'</span>'
+    +'<h2>'+esc(j.address)+'</h2>'+pill(j)+'</div>'
+    +'<div class="sub2">'+esc(j.city||"")+(j.propertyType?' · '+esc(j.propertyType):'')
+    +(j.formType?' · '+esc(j.formType):'')+'</div>';
+
+  h+='<div class="cards">'
+    +'<div class="stat"><div class="k">Opinion of value</div><div class="v">'+money(j.value)+'</div></div>'
+    +'<div class="stat"><div class="k">Stage</div><div class="v sm">'+esc(j.stage||"—")+'</div></div>'
+    +'<div class="stat"><div class="k">Effective date</div><div class="v sm">'+esc(j.effectiveDate||"—")+'</div></div>'
+    +'<div class="stat'+(j.openCritical>0?" warn":"")+'"><div class="k">Open items</div>'
+    +'<div class="v">'+(j.openCritical||0)+'</div></div>'
+    +'</div>';
+
+  h+='<div class="panel"><h3>The file</h3><dl class="kv">'
+    +'<dt>Client</dt><dd>'+esc(j.client||"—")+'</dd>'
+    +'<dt>Working it</dt><dd>'+esc(j.assignedTo||"—")+(j.referredBy?' · referred by '+esc(j.referredBy):'')+'</dd>'
+    +'<dt>Due</dt><dd>'+esc(j.deadline||"no firm date")+'</dd>'
+    +'<dt>Progress</dt><dd>'+esc(j.modulesComplete||"—")+' modules'
+      +(j.stagedGates?' · '+j.stagedGates+' gates staged':'')+'</dd>'
+    +'<dt>Last touched</dt><dd>'+esc(j.lastActivity||"—")+'</dd>'
+    +'<dt>Folder</dt><dd class="stamp">'+esc(j.folder||"—")+'</dd>'
+    +'</dl></div>';
+
+  if(j.note){ h+='<div class="panel"><h3>What you should know</h3><p>'+esc(j.note)+'</p></div>'; }
+
+  if(j.decision){
+    h+='<div class="panel"><h3>Your decision</h3><p><b>'+esc(j.decision.toUpperCase())+'</b>'
+      +(j.decisionNote?' — '+esc(j.decisionNote):'')+'</p>'
+      +'<p class="note">'+esc(j.decisionAt||"")+'</p></div>';
+  } else if(lane(j)==="you"){
+    h+='<div class="panel"><h3>Sign off</h3>'
+      +'<textarea id="dnote" placeholder="A note back to whoever worked it — optional on approve, worth writing on a send-back."></textarea>'
+      +'<div class="acts">'
+      +'<button class="btn primary" data-d="approved">Approve</button>'
+      +'<button class="btn warn" data-d="sent back">Send back</button>'
+      +'<button class="btn quiet" data-d="held">Hold</button>'
+      +'</div>'
+      +'<p class="note" style="margin-top:12px">Approve means it goes out as it stands. '
+      +'Nothing is sent to a client from here — this records your call and tells the shop.</p></div>';
+  } else {
+    h+='<div class="panel"><h3>Sign off</h3><p class="note">Not finished yet. It shows up under '
+      +'<b>Waiting on you</b> when the work is done and the QC gate has passed it.</p></div>';
+  }
+
+  if(j.pdf){
+    h+='<div class="rpt" id="rpt">'
+      +'<div class="acts" style="margin-bottom:12px">'
+      +'<a class="btn primary" href="'+esc(j.pdf)+'" target="_blank" rel="noopener">Open the report</a>'
+      +'</div>'
+      +'<iframe class="frame" id="rptframe" src="'+esc(j.pdf.replace("dl=0","raw=1"))+'" '
+      +'title="the report"></iframe>'
+      +'<div class="panel fallback"><h3>The report</h3><p class="note">It would not display inside the '
+      +'app \u2014 Dropbox will not sit in a frame here. Use <b>Open the report</b> above; it opens in '
+      +'Dropbox where you are already signed in.</p></div></div>';
+  } else {
+    h+='<div class="panel"><h3>The report</h3><p class="note">No rendered PDF on this one yet.</p></div>';
+  }
+
+  pane.innerHTML=h;
+  /* Dropbox may refuse to be framed. Give it four seconds, then swap to the button-only
+     panel rather than leaving a dead grey rectangle sitting there. */
+  var fr=document.getElementById("rptframe");
+  if(fr){
+    var ok=false;
+    fr.addEventListener("load",function(){ ok=true; });
+    setTimeout(function(){ if(!ok){ var w=document.getElementById("rpt"); if(w) w.className="rpt failed"; } },4000);
+  }
+  Array.prototype.forEach.call(pane.querySelectorAll("[data-d]"),function(b){
+    b.onclick=function(){ decide(j, b.getAttribute("data-d")); };
+  });
+}
+
+/* ---------- decisions ---------- */
+function post(payload){
+  if(!CONFIG.endpoint) return Promise.reject(new Error("no endpoint"));
+  return fetch(CONFIG.endpoint,{method:"POST",body:JSON.stringify(payload)})
+    .then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.text(); });
+}
+function flush(){
+  var q=load(QUEUE,[]); if(!q.length){ renderRail(); return; }
+  post(q[0]).then(function(){ q.shift(); put(QUEUE,q); flush(); }, function(){ renderRail(); });
+}
+function decide(j, d){
+  var el=document.getElementById("dnote");
+  var note=el?el.value.trim():"";
+  if(d!=="approved" && !note){ toast("Say why — the note is the useful part."); if(el) el.focus(); return; }
+  var at=new Date().toISOString();
+  j.decision=d; j.decisionNote=note; j.decisionAt=new Date().toLocaleString();
+  var local=load(STORE,{}); local[j.job]={decision:d,decisionNote:note,decisionAt:j.decisionAt};
+  put(STORE,local);
+  var payload={key:CONFIG.key, kind:"signoff", job:j.job, decision:d, note:note, at:at, by:CONFIG.who||"Jeff"};
+  post(payload).then(function(){ toast("Recorded — "+d); }, function(){
+    var q=load(QUEUE,[]); q.push(payload); put(QUEUE,q);
+    toast("Saved here — it will send when you have signal");
+  });
+  renderRail(); renderPane();
+}
+
+/* ---------- start ---------- */
+function merge(rows){
+  var local=load(STORE,{});
+  BOARD=rows.map(function(j){
+    var mine=local[j.job];
+    if(mine){ j.decision=mine.decision; j.decisionNote=mine.decisionNote; j.decisionAt=mine.decisionAt; }
+    return j;
+  });
+}
+function askForKey(){
+  document.getElementById("rail").innerHTML="";
+  document.getElementById("pane").innerHTML='<div class="panel" style="max-width:560px">'
+    +'<h3>You need your own link</h3>'
+    +'<p class="note">Paste your personal link and tap Continue. You only do this once — '
+    +'this iPad remembers you from then on.</p>'
+    +'<input id="keyin" type="text" inputmode="url" autocapitalize="off" autocorrect="off" '
+    +'spellcheck="false" placeholder="Paste your link here" style="margin:10px 0">'
+    +'<p id="keyerr" class="note" style="display:none;color:var(--red)">That does not look like your '
+    +'link. It should end in #k= followed by a code.</p>'
+    +'<div class="acts"><button class="btn primary" id="keygo">Continue</button></div></div>';
+  document.getElementById("keygo").onclick=function(){
+    var v=document.getElementById("keyin").value||"";
+    var m=/[#&?]k=([A-Za-z0-9_-]+)/.exec(v)||/^\s*([A-Za-z0-9_-]{8,})\s*$/.exec(v);
+    if(!m){ document.getElementById("keyerr").style.display="block"; return; }
+    put(KEYK,m[1]); location.reload();
+  };
+  document.getElementById("keyin").addEventListener("keydown",function(e){
+    if(e.key==="Enter"){ e.preventDefault(); document.getElementById("keygo").click(); }
+  });
+}
+
+function start(){
+  if(!bootKey()){ askForKey(); return; }
+  var cached=load("desk.board.v1",null);
+  if(cached){ merge(cached); renderRail(); renderPane(); }
+  document.getElementById("who").innerHTML="loading the board…";
+  /* Two sources, in order of preference:
+       1. the endpoint, gated by the personal key - nothing sensitive is public
+       2. ./board.json sitting next to this page - works the moment the folder is
+          uploaded, with no script edit and no redeploy. It is a PUBLIC file: it is
+          the testing source, and it carries no client names.
+     Delete board.json once the endpoint is live and the desk switches by itself. */
+  fetch(CONFIG.endpoint+"?view=master&key="+encodeURIComponent(CONFIG.key))
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if(d && d.board) return d; throw new Error("endpoint has no board yet"); })
+    .catch(function(){
+      return fetch("board.json?t="+Date.now()).then(function(r){ return r.json(); })
+        .then(function(d){ d.source="local"; return d; });
+    })
+    .then(function(d){
+      if(d.error){ document.getElementById("who").textContent=d.error; return; }
+      CONFIG.who=d.who||"";
+      document.getElementById("who").innerHTML=esc(d.who||"")+"<br>"+esc(d.updated||"")
+        +(d.source==="local"?' <span style="opacity:.65">· test board</span>':"");
+      put("desk.board.v1", d.board||[]);
+      merge(d.board||[]);
+      if(!sel){ var first=BOARD.filter(function(j){return lane(j)==="you";})[0]; sel=first?first.job:null; }
+      renderRail(); renderPane(); flush();
+    })
+    .catch(function(){
+      document.getElementById("who").textContent = cached ? "offline — showing the last board"
+                                                          : "offline, and nothing cached yet";
+      if(!cached){ document.getElementById("pane").innerHTML=
+        '<div class="empty">No signal, and this iPad has not loaded the board yet.</div>'; }
+    });
+}
+if("serviceWorker" in navigator){ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("sw.js").catch(function(){}); }); }
+start();
+</script>
+</body>
+</html>
